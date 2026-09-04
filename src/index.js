@@ -150,4 +150,27 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN)
+  .then(() => {
+    console.log("Discord login successful");
+  })
+  .catch((error) => {
+    console.error("Discord login failed:", error);
+    process.exit(1);
+  });
+
+client.on("error", (error) => {
+  console.error("Discord client error:", error);
+});
+
+client.on("shardError", (error) => {
+  console.error("Discord WebSocket error:", error);
+});
+
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled promise rejection:", error);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
+});
