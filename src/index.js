@@ -4,6 +4,7 @@
 
 require("dotenv").config();
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
+const http = require("http");
 const { SYSTEM_PROMPT, BOT_NICKNAME } = require("./persona");
 const { askGroq } = require("./groq");
 
@@ -14,7 +15,24 @@ const ALLOWED_CHANNEL_IDS = (process.env.ALLOWED_CHANNEL_IDS || "")
 
 const RANDOM_REPLY_CHANCE = parseFloat(process.env.RANDOM_REPLY_CHANCE || "0.4");
 const CHANNEL_COOLDOWN_MS = parseInt(process.env.CHANNEL_COOLDOWN_MS || "4000", 10);
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = "0.0.0.0";
 const HISTORY_LENGTH = parseInt(process.env.HISTORY_LENGTH || "20", 10);
+
+const healthServer = http.createServer((req, res) => {
+  if (req.url === "/health" || req.url === "/") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Alice Discord bot is running");
+    return;
+  }
+
+  res.writeHead(404);
+  res.end("Not Found");
+});
+
+healthServer.listen(PORT, HOST, () => {
+  console.log(`Health server listening on ${HOST}:${PORT}`);
+});
 
 const client = new Client({
   intents: [
