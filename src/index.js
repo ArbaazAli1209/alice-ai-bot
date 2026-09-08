@@ -78,6 +78,12 @@ function onCooldown(channelId) {
   return Date.now() - last < CHANNEL_COOLDOWN_MS;
 }
 
+function isFollowUpToBot(channelId) {
+  const hist = channelHistory.get(channelId) || [];
+  if (hist.length === 0) return false;
+  return hist[hist.length - 1].role === "assistant";
+}
+
 function shouldRespond(message, addressed) {
   if (addressed) return true;
   if (onCooldown(message.channel.id)) return false;
